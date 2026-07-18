@@ -112,6 +112,11 @@ if (!allowedStatuses.includes(status)) {
     message: "Invalid application status",
   });
 }
+if (job.status !== "Available") {
+        return res.status(400).json({
+          message: "This job is not accepting applications."
+        });
+      }
 
 application.status = status;
 

@@ -1,14 +1,37 @@
 const Job = require("../models/Job");
 
+// Create Job
 const createJob = async (req, res) => {
   try {
-    const { company, position, status } = req.body;
+    const {
+      company,
+      position,
+      description,
+      skills,
+      experience,
+      salary,
+      location,
+      employmentType,
+      openings,
+      applicationDeadline,
+      status,
+      companyLogo,
+    } = req.body;
 
     const job = await Job.create({
       company,
       position,
+      description,
+      skills,
+      experience,
+      salary,
+      location,
+      employmentType,
+      openings,
+      applicationDeadline,
       status,
-      createdBy: req.user.id,
+      companyLogo,
+      createdBy: req.user._id,
     });
 
     res.status(201).json({
@@ -22,9 +45,12 @@ const createJob = async (req, res) => {
   }
 };
 
+// Get all jobs created by the logged-in admin
 const getJobs = async (req, res) => {
   try {
-    const jobs = await Job.find({ user: req.user.id });
+    const jobs = await Job.find({
+      createdBy: req.user._id,
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({
       count: jobs.length,
@@ -37,6 +63,7 @@ const getJobs = async (req, res) => {
   }
 };
 
+// Update Job
 const updateJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -47,13 +74,12 @@ const updateJob = async (req, res) => {
       });
     }
 
-    // Make sure the job belongs to the logged-in user
-    if (job.user.toString() !== req.user.id) {
+    // Ensure the logged-in admin owns this job
+    if (job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(401).json({
         message: "Not authorized",
       });
     }
-
 
     const updatedJob = await Job.findByIdAndUpdate(
       req.params.id,
@@ -68,7 +94,6 @@ const updateJob = async (req, res) => {
       message: "Job updated successfully",
       job: updatedJob,
     });
-
   } catch (error) {
     res.status(500).json({
       message: error.message,
@@ -76,8 +101,7 @@ const updateJob = async (req, res) => {
   }
 };
 
-
-//delete a job
+// Delete Job
 const deleteJob = async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -88,8 +112,8 @@ const deleteJob = async (req, res) => {
       });
     }
 
-    // Check ownership
-    if (job.user.toString() !== req.user.id) {
+    // Ensure the logged-in admin owns this job
+    if (job.createdBy.toString() !== req.user._id.toString()) {
       return res.status(401).json({
         message: "Not authorized",
       });
@@ -100,7 +124,6 @@ const deleteJob = async (req, res) => {
     res.status(200).json({
       message: "Job deleted successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       message: error.message,
