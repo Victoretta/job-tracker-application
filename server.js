@@ -3,9 +3,11 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 
+const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
+const path = require("path");
 
 dotenv.config();
 
@@ -18,12 +20,24 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+//upload profile pics route 
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"))
+);
+
 // Auth Routes
 app.use("/api/auth", authRoutes);
 // Job Routes
 app.use("/api/jobs", jobRoutes);
 //application route
 app.use("/api/applications", applicationRoutes);
+
+// admin route
+app.use("/api/admin", adminRoutes);
+
+
+
 
 // Default Route
 app.get("/", (req, res) => {

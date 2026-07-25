@@ -7,20 +7,62 @@ const admin = require("../middleware/adminMiddleware");
 const {
   createJob,
   getJobs,
+  getJobById,
   updateJob,
   deleteJob,
+  getPublicJobs,
+  getDashboardStats,
+  getAnalytics,
 } = require("../controllers/jobController");
+const upload = require("../middleware/companyUpload");
 
-// Only admins can create jobs
-router.post("/", protect, admin, createJob);
 
-// Everyone logged in can view jobs
+// Public jobs
+router.get("/public", getPublicJobs);
+
+// job stats
+router.get(
+  "/stats/dashboard",
+  protect,
+  admin,
+  getDashboardStats
+);
+
+// Create job
+router.post(
+  "/",
+  protect,
+  admin,
+  upload.single("companyLogo"),
+  createJob
+);
+
+
+// Logged-in user's/admin's jobs
 router.get("/", protect, getJobs);
 
-// Only admins can update jobs
-router.put("/:id", protect, admin, updateJob);
+router.get(
+  "/analytics",
+  protect,
+  admin,
+  getAnalytics
+);
 
-// Only admins can delete jobs
+// Single job
+router.get("/:id", protect, getJobById);
+
+// Update job
+router.put(
+  "/:id",
+  protect,
+  admin,
+  upload.single("companyLogo"),
+  updateJob
+);
+
+// Delete job
 router.delete("/:id", protect, admin, deleteJob);
+
+
 
 module.exports = router;
