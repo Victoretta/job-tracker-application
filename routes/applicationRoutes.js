@@ -13,34 +13,52 @@ const {
   getAllApplications,
 } = require("../controllers/applicationController");
 
+// Applicant dashboard
 router.get(
   "/dashboard",
   protect,
   getApplicantDashboard
 );
 
-
-
-
 // Logged-in user views their applications
-router.get("/my", protect, getMyApplications);
+router.get(
+  "/my",
+  protect,
+  getMyApplications
+);
 
 // Admin: Get all applications
 router.get(
-  "/",
+  "/all",
   protect,
   admin,
   getAllApplications
 );
 
-// Admin views all applications for a job
-router.get("/job/:jobId", protect, admin, getApplicationsForJob);
+// Admin: Get applications for one job
+router.get(
+  "/job/:jobId",
+  protect,
+  admin,
+  getApplicationsForJob
+);
 
 // User applies for a job
-router.post("/:jobId", protect, applyForJob);
+router.post(
+  "/:jobId",
+  protect,
+  applyForJob
+);
 
 // Admin updates application status
-router.put("/:id/status", protect, admin, updateApplicationStatus);
+router.put(
+  "/:id/status",
+  protect,
+  admin,
+  updateApplicationStatus
+);
+
+module.exports = router;
 
 
 
